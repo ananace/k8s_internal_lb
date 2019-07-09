@@ -1,0 +1,12 @@
+#!/bin/env ruby
+# frozen_string_literal: true
+
+require 'k8s_internal_lb'
+
+load '/etc/k8s_internal_lb.rb' if File.exist? '/etc/k8s_internal_lb.rb'
+load './config.rb' if File.exist? 'config.rb'
+
+# TODO: Load more configs
+
+client = K8sInternalLb::Client.instance
+client.run
