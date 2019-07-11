@@ -38,5 +38,20 @@ module K8sInternalLb
     def not_ready?
       @status == :not_ready
     end
+
+    # Equality overriding
+    def ==(other)
+      return unless other.respond_to?(:address) && other.respond_to?(:port) && other.respond_to?(:status)
+
+      address == other.address && port == other.port && status == other.status
+    end
+
+    def hash
+      [address, port, status].hash
+    end
+
+    def eql?(other)
+      self == other
+    end
   end
 end

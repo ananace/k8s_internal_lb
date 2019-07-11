@@ -59,8 +59,8 @@ module K8sInternalLb
     protected
 
     def initialize(name:, namespace: nil, ports:, interval: 10, **_params)
-      raise ArgumentError, 'Ports must be a list of Port objects' unless ports.is_a?(Array) || ports.all? { |p| p.is_a? Port }
-      raise ArgumentError, 'Interval must be a positive number' unless interval.is_a?(Numeric) || interval.positive?
+      raise ArgumentError, 'Ports must be a list of Port objects' unless ports.is_a?(Array) && ports.all? { |p| p.is_a? Port }
+      raise ArgumentError, 'Interval must be a positive number' unless interval.is_a?(Numeric) && interval.positive?
 
       @name = name
       @namespace = namespace

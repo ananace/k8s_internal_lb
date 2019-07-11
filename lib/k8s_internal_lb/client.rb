@@ -14,13 +14,19 @@ module K8sInternalLb
     end
 
     def add_service(name, **data)
+      service = nil
+
       if name.is_a? Service
-        @services[name.name] = name
-        return
+        service = name
+        name = service.name
+      else
+        data[:name] ||= name
+        service = Service.create(**data)
       end
 
-      data[:name] ||= name
-      @services[name] = Service.create(**data)
+      raise 'Unable to find service' unless check_service(service)
+
+      @services[name] = service
     end
 
     def remove_service(name)
@@ -39,7 +45,7 @@ module K8sInternalLb
 
           next unless diff >= service.interval
 
-          logger.info "Interval reached on #{name}, running update"
+          logger.debug "Interval reached on #{name}, running update"
           update(service)
         end
 
@@ -89,6 +95,8 @@ module K8sInternalLb
 
       return true if old_endpoints == endpoints && !force
 
+      logger.info "Active endpoints have changed for #{service.name}, updating cluster data"
+
       kubeclient.patch_endpoints(
         service[:name],
         {
@@ -103,6 +111,12 @@ module K8sInternalLb
       )
     rescue StandardError => e
       raise e
+    end
+
+    def check_service(service)
+      kubeclient.get_service(service[:name], service[:namespace] || namespace)
+    rescue Kubeclient::ResourceNotFoundError
+      false
     end
 
     def kubeclient

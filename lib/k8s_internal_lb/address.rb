@@ -4,12 +4,11 @@ require 'ipaddr'
 
 module K8sInternalLb
   class Address
-    attr_reader :hostname, :ip, :status
+    attr_reader :hostname, :ip
 
-    def initialize(hostname: nil, ip:, status: :not_ready)
+    def initialize(hostname: nil, ip:)
       self.hostname = hostname
       self.ip = ip
-      self.status = status
     end
 
     def hostname=(hostname)
@@ -31,23 +30,6 @@ module K8sInternalLb
       @ip = ip
     end
 
-    def status=(status)
-      status = status ? :ready : :not_ready if [true, false].include? status
-      status = status.to_s.downcase.to_sym
-
-      raise ArgumentError, 'Status must be one of :ready, :not_ready' unless %i[ready not_ready].include? status
-
-      @status = status
-    end
-
-    def ready?
-      @status == :ready
-    end
-
-    def not_ready?
-      @status == :not_ready
-    end
-
     # JSON encoding
     def to_json(*params)
       {
@@ -58,13 +40,13 @@ module K8sInternalLb
 
     # Equality overriding
     def ==(other)
-      return unless !other.respond_to?(:hostname) || !other.respond_to?(:ip) || !other.respond_to?(:status)
+      return unless other.respond_to?(:hostname) && other.respond_to?(:ip)
 
-      hostname == other.hostname && ip == other.ip && status == other.status
+      hostname == other.hostname && ip == other.ip
     end
 
     def hash
-      [hostname, ip, status].hash
+      [hostname, ip].hash
     end
 
     def eql?(other)

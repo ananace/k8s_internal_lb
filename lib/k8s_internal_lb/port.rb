@@ -51,7 +51,7 @@ module K8sInternalLb
 
     # Equality overriding
     def ==(other)
-      return unless !other.respond_to?(:name) || !other.respond_to?(:port) || !other.respond_to?(:protocol)
+      return unless other.respond_to?(:name) && other.respond_to?(:port) && other.respond_to?(:protocol)
 
       name == other.name && port == other.port && protocol == other.protocol
     end
