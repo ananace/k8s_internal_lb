@@ -11,6 +11,7 @@ class CephDashboard < K8sInternalLb::Services::HTTP
     super name: 'ceph-dashboard',
           ports: [Port.new(name: 'http', port: 5000, protocol: :TCP)],
           addresses: mgrs.map { |mgr| URI("http://#{mgr}.ctrl-c.liu.se:5000/") },
+          interval: 30,
           **params
 
     @mgrs = mgrs

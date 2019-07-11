@@ -19,24 +19,24 @@ module K8sInternalLb
         raise 'No TCP ports provided' if ports.select(&:tcp?).empty?
 
         @endpoints = addresses.map do |addr|
-          available = \
-            begin
-              Timeout.timeout(timeout) do
-                begin
-                  ports.select(&:tcp?).each do |p|
-                    TCPSocket.new(addr, p.port).close
+          ports.map do |port|
+            available = \
+              begin
+                Timeout.timeout(timeout) do
+                  begin
+                    TCPSocket.new(addr.ip.to_s, port.port).close
                     true
+                  rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+                    false
                   end
-                rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-                  false
                 end
+              rescue Timeout::Error
+                false
               end
-            rescue Timeout::Error
-              false
-            end
 
-          Address.new ip: addr, status: available
-        end
+            Endpoint.new address: addr, port: port, status: available
+          end
+        end.flatten
 
         true
       end

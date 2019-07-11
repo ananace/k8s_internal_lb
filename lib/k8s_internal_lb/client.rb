@@ -3,10 +3,51 @@
 module K8sInternalLb
   class Client
     attr_accessor :kubeclient_options, :namespace, :auth_options, :ssl_options, :server, :api_version
+    attr_reader :services
 
     def self.instance
       @instance ||= Client.new
     end
+
+    def in_cluster?
+      Dir.exist? '/var/run/secrets/kubernetes.io'
+    end
+
+    def add_service(name, **data)
+      if name.is_a? Service
+        @services[name.name] = name
+        return
+      end
+
+      data[:name] ||= name
+      @services[name] = Service.create(**data)
+    end
+
+    def remove_service(name)
+      @services.delete name
+    end
+
+    def run
+      loop do
+        sleep_duration = 5
+        @services.each do |name, service|
+          logger.debug "Checking #{name} for interval"
+
+          diff = (Time.now - service.last_update)
+          until_next = service.interval - diff
+          sleep_duration = until_next if until_next.positive? && until_next < sleep_duration
+
+          next unless diff >= service.interval
+
+          logger.info "Interval reached on #{name}, running update"
+          update(service)
+        end
+
+        sleep sleep_duration
+      end
+    end
+
+    private
 
     def initialize
       @kubeclient_options = {}
@@ -34,45 +75,21 @@ module K8sInternalLb
       @ssl_options[:ca_file] = '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
     end
 
-    def in_cluster?
-      Dir.exist? '/var/run/secrets/kubernetes.io'
+    def logger
+      @logger ||= Logging::Logger[self]
     end
-
-    def add_service(name, **data)
-      if name.is_a? Service
-        @services[name.name] = name
-        return
-      end
-
-      data[:name] ||= name
-      @services[name] = Service.new(**data)
-    end
-
-    def run
-      @services.each do |name, service|
-        logger.debug "Checking #{name} for interval"
-
-        diff = (Time.now - service.last_update)
-        next unless diff > service.interval
-
-        logger.info "Interval reached on #{name}, running update"
-        update(service)
-      end
-    end
-
-    private
 
     def update(service, force: false)
       service = @services[service] unless service.is_a? Service
 
       old_endpoints = service.endpoints.dup
-      service.update
       service.last_update = Time.now
+      service.update
       endpoints = service.endpoints
 
       return true if old_endpoints == endpoints && !force
 
-      client.patch_endpoints(
+      kubeclient.patch_endpoints(
         service[:name],
         {
           metadata: {
@@ -80,9 +97,7 @@ module K8sInternalLb
               'com.github.ananace.k8s_internal_lb/timestamp': Time.now.to_i.to_s
             }
           },
-          subsets: [
-            service.to_subset
-          ]
+          subsets: service.to_subsets
         },
         service[:namespace] || namespace
       )

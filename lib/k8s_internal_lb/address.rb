@@ -13,6 +13,11 @@ module K8sInternalLb
     end
 
     def hostname=(hostname)
+      if hostname.nil? || hostname.empty?
+        @hostname = nil
+        return
+      end
+
       hostname = hostname.to_s.downcase
 
       raise ArgumentError, 'Hostname is not allowed to be an FQDN' if hostname.include? '.'

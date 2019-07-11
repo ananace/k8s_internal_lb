@@ -6,6 +6,7 @@ module K8sInternalLb
     attr_accessor :name
 
     def initialize(name: nil, port:, protocol: :TCP)
+      name = nil if name&.empty?
       @name = name
       self.port = port
       self.protocol = protocol
