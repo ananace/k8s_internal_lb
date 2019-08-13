@@ -2,11 +2,54 @@
 # frozen_string_literal: true
 
 require 'k8s_internal_lb'
+require 'optparse'
+require 'ostruct'
 
-load '/etc/k8s_internal_lb.rb' if File.exist? '/etc/k8s_internal_lb.rb'
-load './config.rb' if File.exist? 'config.rb'
+options = OpenStruct.new
+parser = OptParse.new do |opts|
+  opts.banner = 'Usage: k8s_internal_lb [options...]'
 
-# TODO: Load more configs
+  opts.on('-c', '--config=FILE', 'Run with a specific configuration file, can be specified multiple times') do |file|
+    raise ArugmentError, 'Not a valid file' unless File.file? file
+
+    (options.config_files ||= []) << file
+  end
+
+  opts.on('-v', '--verbose', 'Increase log level') do
+    options.verbose = true
+  end
+
+  opts.on('-h', '--help', 'Print this text and exit') do
+    puts parser
+    exit
+  end
+
+  opts.on('-V', '--version', 'Print the application version and exit') do
+    puts "K8sInternalLb v#{K8sInternalLb::VERSION}"
+    exit
+  end
+end
+parser.parse!
+
+loaded = 0
+if options.config_files&.any
+  options.config_files.each do |file|
+    load file
+    loaded += 1
+  end
+else
+  if File.exist? '/etc/k8s_internal_lb.rb'
+    load '/etc/k8s_internal_lb.rb'
+    loaded += 1
+  end
+
+  if File.exist? 'config.rb'
+    load './config.rb'
+    loaded += 1
+  end
+end
+
+K8sInternalLb.debug! if options.verbose
 
 client = K8sInternalLb::Client.instance
 client.run
