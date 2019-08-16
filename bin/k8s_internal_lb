@@ -49,6 +49,8 @@ else
   end
 end
 
+raise 'Failed to load any configuration file' if loaded.zero?
+
 K8sInternalLb.debug! if options.verbose
 
 client = K8sInternalLb::Client.instance
