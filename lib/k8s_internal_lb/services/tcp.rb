@@ -43,4 +43,3 @@ module K8sInternalLb
     end
   end
 end
-
