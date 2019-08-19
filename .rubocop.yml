@@ -12,10 +12,13 @@ Style/ClassAndModuleChildren:
   Enabled: false
 
 Metrics/AbcSize:
-  Max: 25
+  Max: 50
 
 Metrics/LineLength:
   Max: 190
 
 Metrics/MethodLength:
   Max: 50
+
+Metrics/ParameterLists:
+  Max: 10
