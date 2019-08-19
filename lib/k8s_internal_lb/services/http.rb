@@ -31,9 +31,11 @@ module K8sInternalLb
             false # Just assume failures to mean inaccessibility
           end
 
-          Address.new ip: address,
-                      hostname: addr.host.split('.').first,
-                      status: available
+          e_addr = Address.new ip: address,
+                               hostname: addr.host.split('.').first,
+                               status: available
+
+          Endpoint.new address: e_addr, port: port, status: available
         end
 
         true
