@@ -16,6 +16,10 @@ module K8sInternalLb
       klass.new(**params)
     end
 
+    def logger
+      @logger ||= Logging::Logger[self]
+    end
+
     def update
       raise NotImplementedError
     end
