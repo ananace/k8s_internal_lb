@@ -27,8 +27,9 @@ module K8sInternalLb
             Net::HTTP.start(addr.host, addr.port, use_ssl: ssl, read_timeout: timeout, **http_opts) do |h|
               available = h.head(addr.path).is_a? Net::HTTPSuccess
             end
-          rescue StandardError
-            false # Just assume failures to mean inaccessibility
+          rescue StandardError => e
+            logger.warn "Failed to determine availability for #{addr} - #{e.class}: #{e.message}\n#{e.backtacktrace}"
+            available = false # Assume failures to mean inaccessibility
           end
 
           e_addr = Address.new ip: address,
