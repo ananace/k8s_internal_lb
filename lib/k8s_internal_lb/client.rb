@@ -2,6 +2,8 @@
 
 module K8sInternalLb
   class Client
+    TIMESTAMP_ANNOTATION = 'com.github.ananace.k8s_internal_lb/timestamp'
+
     attr_accessor :kubeclient_options, :namespace, :auth_options, :ssl_options, :server, :api_version
     attr_reader :services
 
@@ -10,6 +12,7 @@ module K8sInternalLb
     end
 
     def in_cluster?
+      # FIXME: Better detection, actually look for the necessary cluster components
       Dir.exist? '/var/run/secrets/kubernetes.io'
     end
 
@@ -24,7 +27,11 @@ module K8sInternalLb
         service = Service.create(**data)
       end
 
-      raise 'Unable to find service' unless check_service(service)
+      k8s_service = check_service(service)
+      raise 'Unable to find service' if k8s_service.nil?
+
+      # if k8s_service.annotations[TIMESTAMP_ANNOTATION]
+      # end
 
       @services[name] = service
     end
@@ -102,7 +109,7 @@ module K8sInternalLb
         {
           metadata: {
             annotations: {
-              'com.github.ananace.k8s_internal_lb/timestamp': Time.now.to_i.to_s
+              TIMESTAMP_ANNOTATION => Time.now.to_i.to_s
             }
           },
           subsets: service.to_subsets
@@ -116,7 +123,7 @@ module K8sInternalLb
     def check_service(service)
       kubeclient.get_service(service[:name], service[:namespace] || namespace)
     rescue Kubeclient::ResourceNotFoundError
-      false
+      nil
     end
 
     def kubeclient
