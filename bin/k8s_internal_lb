@@ -31,22 +31,19 @@ parser = OptParse.new do |opts|
 end
 parser.parse!
 
-loaded = 0
 if options.config_files&.any
   options.config_files.each do |file|
-    load file
-    loaded += 1
+    if File.directory? file
+      Dir.entries(file).select { |f| f.end_with? '.rb' }.each do |f|
+        load f
+      end
+    else
+      load file
+    end
   end
 else
-  if File.exist? '/etc/k8s_internal_lb.rb'
-    load '/etc/k8s_internal_lb.rb'
-    loaded += 1
-  end
-
-  if File.exist? 'config.rb'
-    load './config.rb'
-    loaded += 1
-  end
+  load '/etc/k8s_internal_lb.rb' if File.exist? '/etc/k8s_internal_lb.rb'
+  load './config.rb' if File.exist? 'config.rb'
 end
 
 K8sInternalLb.debug! if options.verbose
