@@ -30,8 +30,10 @@ module K8sInternalLb
       k8s_service = check_service(service)
       raise 'Unable to find service' if k8s_service.nil?
 
-      # if k8s_service.annotations[TIMESTAMP_ANNOTATION]
-      # end
+      if k8s_service.metadata&.annotations&.key? TIMESTAMP_ANNOTATION
+        ts = k8s_service.annotations.fetch TIMESTAMP_ANNOTATION, nil
+        service.last_update = Time.at(ts.to_i)
+      end
 
       @services[name] = service
     end
