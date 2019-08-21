@@ -70,7 +70,7 @@ module K8sInternalLb
       @namespace = namespace
       @ports = ports
       @interval = interval
-      @last_update = Time.new(0)
+      @last_update = Time.at(0)
       @endpoints = []
     end
   end
