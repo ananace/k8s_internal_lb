@@ -27,7 +27,7 @@ module K8sInternalLb
         service = Service.create(**data)
       end
 
-      k8s_service = check_service(service)
+      k8s_service = check_endpoint(service)
       raise 'Unable to find service' if k8s_service.nil?
 
       if k8s_service.metadata&.annotations&.key? TIMESTAMP_ANNOTATION
@@ -116,14 +116,20 @@ module K8sInternalLb
           },
           subsets: service.to_subsets
         },
-        service[:namespace] || namespace
+        service.namespace || namespace
       )
     rescue StandardError => e
       raise e
     end
 
-    def check_service(service)
-      kubeclient.get_service(service[:name], service[:namespace] || namespace)
+    def get_service(service)
+      kubeclient.get_service(service.name, service.namespace || namespace)
+    rescue Kubeclient::ResourceNotFoundError
+      nil
+    end
+
+    def get_endpoint(service)
+      kubeclient.get_endpoint(service.name, service.namespace || namespace)
     rescue Kubeclient::ResourceNotFoundError
       nil
     end
