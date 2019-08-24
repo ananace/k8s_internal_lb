@@ -106,7 +106,7 @@ module K8sInternalLb
 
       logger.info "Active endpoints have changed for #{service.name}, updating cluster data"
 
-      kubeclient.patch_endpoints(
+      kubeclient.patch_endpoint(
         service.name,
         {
           metadata: {
