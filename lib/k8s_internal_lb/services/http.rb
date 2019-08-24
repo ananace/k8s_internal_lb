@@ -65,8 +65,7 @@ module K8sInternalLb
           end
 
           e_addr = Address.new ip: address,
-                               hostname: addr.host.split('.').first,
-                               status: available
+                               hostname: addr.host.split('.').first
 
           Endpoint.new address: e_addr, port: port, status: available
         end
