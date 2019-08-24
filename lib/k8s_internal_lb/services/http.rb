@@ -30,7 +30,7 @@ module K8sInternalLb
       end
 
       def ports
-        @addresses.map { |addr| Port.new port: addr.port }
+        @addresses.map { |addr| Port.new port: addr.port }.uniq
       end
 
       def method=(method)
