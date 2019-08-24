@@ -57,7 +57,7 @@ module K8sInternalLb
       #   v
       # end
 
-      grouped.to_json
+      grouped
     end
 
     protected
