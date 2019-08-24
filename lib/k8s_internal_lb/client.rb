@@ -104,7 +104,7 @@ module K8sInternalLb
 
       return true if old_endpoints == endpoints && !force
 
-      logger.info "Active endpoints have changed for #{service.name}, updating cluster data"
+      logger.info "Active endpoints have changed for #{service.name}, updating cluster data to #{service.to_subsets.to_json}"
 
       kubeclient.patch_endpoint(
         service.name,
