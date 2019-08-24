@@ -60,7 +60,7 @@ module K8sInternalLb
                           end
             end
           rescue StandardError => e
-            logger.warn "Failed to determine availability for #{addr} - #{e.class}: #{e.message}\n#{e.backtrace}"
+            logger.warn "Failed to determine availability for #{addr} - #{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
             available = false # Assume failures to mean inaccessibility
           end
 
