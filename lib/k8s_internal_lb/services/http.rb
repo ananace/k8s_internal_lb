@@ -55,7 +55,7 @@ module K8sInternalLb
 
             Net::HTTP.start(addr.host, addr.port, use_ssl: ssl, read_timeout: timeout, **http_opts) do |h|
               resp = h.send(@method, addr.path)
-              logger.debug resp
+              logger.debug "#{addr}: #{resp.inspect}"
 
               available = if @expects == :success
                             resp.is_a? Net::HTTPSuccess
@@ -66,7 +66,7 @@ module K8sInternalLb
                           end
             end
           rescue StandardError => e
-            logger.warn "Failed to determine availability for #{addr} - #{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
+            logger.warn "Failed to determine availability for #{addr} - #{e.class}: #{e.message}\n#{e.backtrace[0, 20].join("\n")}"
             available = false # Assume failures to mean inaccessibility
           end
 
