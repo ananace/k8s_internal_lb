@@ -9,7 +9,8 @@ module K8sInternalLb
       attr_accessor :addresses, :timeout, :http_opts
       attr_reader :method, :expects
 
-      def initialize(addresses:, ports: [], method: :head, expects: :success, timeout: 5, http_opts: {}, **params)
+      def initialize(addresses:, method: :head, expects: :success, timeout: 5, http_opts: {}, **params)
+        params[:ports] = []
         super
 
         self.method = method
@@ -29,8 +30,6 @@ module K8sInternalLb
       end
 
       def ports
-        return super unless super.empty?
-
         @addresses.map { |addr| Port.new port: addr.port }
       end
 
