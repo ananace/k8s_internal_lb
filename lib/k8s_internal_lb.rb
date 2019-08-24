@@ -12,6 +12,7 @@ module K8sInternalLb
   autoload :Service, 'k8s_internal_lb/service'
 
   module Services
+    autoload :HTTP, 'k8s_internal_lb/services/http'
     autoload :TCP, 'k8s_internal_lb/services/tcp'
   end
 
