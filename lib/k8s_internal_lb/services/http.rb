@@ -34,7 +34,7 @@ module K8sInternalLb
       end
 
       def method=(method)
-        raise ArgumentError, 'Invalid HTTP request method' unless %i[get head options post put].include? method
+        raise ArgumentError, 'Invalid HTTP request method' unless %i[get get2 head head2 options post put].include? method
 
         @method = method
       end
