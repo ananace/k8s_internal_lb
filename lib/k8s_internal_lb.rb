@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'k8s_internal_lb/version'
+require 'kubeclient'
 
 autoload :Logging, 'logging'
 
