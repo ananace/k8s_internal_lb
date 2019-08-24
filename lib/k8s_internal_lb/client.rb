@@ -27,7 +27,7 @@ module K8sInternalLb
         service = Service.create(**data)
       end
 
-      k8s_service = check_endpoint(service)
+      k8s_service = get_endpoint(service)
       raise 'Unable to find service' if k8s_service.nil?
 
       if k8s_service.metadata&.annotations&.key? TIMESTAMP_ANNOTATION
