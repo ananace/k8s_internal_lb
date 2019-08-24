@@ -55,6 +55,7 @@ module K8sInternalLb
 
             Net::HTTP.start(addr.host, addr.port, use_ssl: ssl, read_timeout: timeout, **http_opts) do |h|
               resp = h.send(@method, addr.path)
+              logger.debug resp
 
               available = if @expects == :success
                             resp.is_a? Net::HTTPSuccess
