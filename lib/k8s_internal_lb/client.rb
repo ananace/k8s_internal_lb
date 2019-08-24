@@ -2,7 +2,7 @@
 
 module K8sInternalLb
   class Client
-    TIMESTAMP_ANNOTATION = 'com.github.ananace.k8s_internal_lb/timestamp'
+    TIMESTAMP_ANNOTATION = 'com.github.ananace.k8s-internal-lb/timestamp'
 
     attr_accessor :kubeclient_options, :namespace, :auth_options, :ssl_options, :server, :api_version
     attr_reader :services
