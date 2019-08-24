@@ -15,6 +15,8 @@ module K8sInternalLb
         self.method = method
         self.expects = expects
 
+        addresses = addresses.map { |addr| URI(addr) }
+
         @addresses = addresses
         @timeout = timeout
         @http_opts = http_opts
