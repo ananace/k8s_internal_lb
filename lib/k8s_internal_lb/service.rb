@@ -44,7 +44,7 @@ module K8sInternalLb
         {
           addresses: g.select(&:ready?).map(&:address),
           notReadyAddresses: g.select(&:not_ready?).map(&:address),
-          ports: p
+          ports: [p]
         }
       end
 
