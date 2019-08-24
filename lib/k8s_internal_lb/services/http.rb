@@ -15,7 +15,13 @@ module K8sInternalLb
         self.method = method
         self.expects = expects
 
-        addresses = addresses.map { |addr| URI(addr) }
+        addresses = addresses.map do |addr|
+          addr = URI(addr)
+
+          addr.path = '/' if addr.path.empty?
+
+          addr
+        end
 
         @addresses = addresses
         @timeout = timeout
