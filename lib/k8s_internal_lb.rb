@@ -8,6 +8,7 @@ autoload :Logging, 'logging'
 module K8sInternalLb
   autoload :Address, 'k8s_internal_lb/address'
   autoload :Client, 'k8s_internal_lb/client'
+  autoload :Endpoint, 'k8s_internal_lb/endpoint'
   autoload :Port, 'k8s_internal_lb/port'
   autoload :Service, 'k8s_internal_lb/service'
 
