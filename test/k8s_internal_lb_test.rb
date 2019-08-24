@@ -7,7 +7,7 @@ class K8sInternalLbTest < Test::Unit::TestCase
     refute_nil ::K8sInternalLb::VERSION
   end
 
-  def test_it_does_something_useful
-    assert false
+  def test_logger
+    refute_nil ::K8sInternalLb.logger
   end
 end
