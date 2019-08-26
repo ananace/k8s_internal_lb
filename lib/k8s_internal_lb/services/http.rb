@@ -50,7 +50,7 @@ module K8sInternalLb
       end
 
       def expects=(expects)
-        raise ArgumentError, 'Invalid expects type' unless expects == :success || [Numeric, Proc].include?(expects.class)
+        raise ArgumentError, 'Invalid expects type' unless expects == :success || [Integer, Proc].include?(expects.class)
 
         @expects = expects
       end
