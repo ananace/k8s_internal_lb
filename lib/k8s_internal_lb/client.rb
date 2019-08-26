@@ -5,6 +5,7 @@ module K8sInternalLb
     TIMESTAMP_ANNOTATION = 'com.github.ananace.k8s-internal-lb/timestamp'
 
     attr_accessor :kubeclient_options, :namespace, :auth_options, :ssl_options, :server, :api_version
+    attr_accessor :sleep_duration
     attr_reader :services
 
     def self.instance
@@ -44,7 +45,6 @@ module K8sInternalLb
 
     def run
       loop do
-        sleep_duration = 5
         @services.each do |name, service|
           logger.debug "Checking #{name} for interval"
 
@@ -58,13 +58,15 @@ module K8sInternalLb
           update(service)
         end
 
-        sleep sleep_duration
+        sleep @sleep_duration
       end
     end
 
     private
 
     def initialize
+      @sleep_duration = 5
+
       @kubeclient_options = {}
       @auth_options = {}
       @ssl_options = {}

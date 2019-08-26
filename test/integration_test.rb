@@ -80,7 +80,8 @@ class IntegrationTest < Test::Unit::TestCase
                  @service.namespace
                )
 
-    Timeout.timeout(8) do
+    @client.sleep_duration = 0.5
+    Timeout.timeout(1) do
       @client.run
     end
   rescue Timeout::Error
