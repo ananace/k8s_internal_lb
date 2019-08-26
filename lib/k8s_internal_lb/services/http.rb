@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'net/http'
-require 'resolv'
 
 module K8sInternalLb
   module Services
@@ -77,7 +76,6 @@ module K8sInternalLb
           available = false
 
           begin
-            address = Resolv.getaddress(addr.host)
             ssl = addr.scheme == 'https'
 
             Net::HTTP.start(addr.host, addr.port, use_ssl: ssl, read_timeout: timeout, **http_opts) do |h|
@@ -97,9 +95,7 @@ module K8sInternalLb
             available = false # Assume failures to mean inaccessibility
           end
 
-          e_addr = Address.new ip: address,
-                               hostname: addr.host.split('.').first
-
+          e_addr = Address.new fqdn: addr.host
           Endpoint.new address: e_addr, port: ports.find { |p| p.port == addr.port }, status: available
         end
 
