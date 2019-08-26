@@ -45,12 +45,14 @@ module K8sInternalLb
 
     def run
       loop do
+        sleep_duration = @sleep_duration
+
         @services.each do |name, service|
           logger.debug "Checking #{name} for interval"
 
           diff = (Time.now - service.last_update)
           until_next = service.interval - diff
-          sleep_duration = until_next if until_next.positive? && until_next < @sleep_duration
+          sleep_duration = until_next if until_next.positive? && until_next < sleep_duration
 
           next unless diff >= service.interval
 
@@ -58,7 +60,7 @@ module K8sInternalLb
           update(service)
         end
 
-        sleep @sleep_duration
+        sleep sleep_duration
       end
     end
 
