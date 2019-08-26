@@ -34,3 +34,5 @@ module K8sInternalLb
     end
   end
 end
+
+K8sInternalLb.logger # Set up logger
