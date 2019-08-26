@@ -10,7 +10,7 @@ module K8sInternalLb
       attr_reader :method, :expects
 
       def initialize(addresses:, method: :head, expects: :success, timeout: 5, http_opts: {}, **params)
-        params[:ports] = []
+        params[:ports] ||= []
         super
 
         self.method = method
@@ -30,7 +30,17 @@ module K8sInternalLb
       end
 
       def ports
-        @addresses.map { |addr| Port.new port: addr.port }.uniq
+        http_ports = @addresses.map { |addr| Port.new port: addr.port }.uniq
+        
+        # Copy port names over where appropriate
+        super.each do |port|
+          http_port = http_ports.find { |http_port| http_port.port == port.port }
+          next unless http_port
+
+          http_port.name = port.name
+        end
+
+        http_ports
       end
 
       def method=(method)
