@@ -30,6 +30,14 @@ module K8sInternalLb
       end
 
       def ports
+        # Ensure data is recalculated if addresses or ports change
+        address_hash = @addresses.hash
+        port_hash = super.hash
+        @http_ports = nil if @address_hash != address_hash
+        @http_ports = nil if @port_hash != port_hash
+        @address_hash = address_hash
+        @port_hash = port_hash
+
         @http_ports ||= begin
           http_ports = @addresses.map { |addr| Port.new port: addr.port }.uniq
         
