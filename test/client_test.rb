@@ -77,7 +77,7 @@ class ClientTest < Test::Unit::TestCase
     now = Time.now
     Time.stubs(:now).returns now
 
-    @kubeclient.expects(:patch_endpoint).with('test', { metadata: { annotations: { K8sInternalLb::Client::TIMESTAMP_ANNOTATION => now.to_i.to_s } }, subsets: svc.to_subsets }, 'testing').returns(svc)
+    @kubeclient.expects(:patch_endpoint).with('test', { metadata: { annotations: { K8sInternalLb::Client::TIMESTAMP_ANNOTATION => now.to_s } }, subsets: svc.to_subsets }, 'testing').returns(svc)
 
     @client.add_service svc
 

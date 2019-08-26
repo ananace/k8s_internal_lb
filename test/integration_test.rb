@@ -53,7 +53,7 @@ class IntegrationTest < Test::Unit::TestCase
                  {
                    metadata: {
                      annotations: {
-                       K8sInternalLb::Client::TIMESTAMP_ANNOTATION => now.to_i.to_s
+                       K8sInternalLb::Client::TIMESTAMP_ANNOTATION => now.to_s
                      }
                    },
                    subsets: [
@@ -69,7 +69,7 @@ class IntegrationTest < Test::Unit::TestCase
                  {
                    metadata: {
                      annotations: {
-                       K8sInternalLb::Client::TIMESTAMP_ANNOTATION => later.to_i.to_s
+                       K8sInternalLb::Client::TIMESTAMP_ANNOTATION => later.to_s
                      }
                    },
                    subsets: [

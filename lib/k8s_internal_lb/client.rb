@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'time'
+
 module K8sInternalLb
   class Client
     TIMESTAMP_ANNOTATION = 'com.github.ananace.k8s-internal-lb/timestamp'
@@ -33,7 +35,11 @@ module K8sInternalLb
 
       if k8s_service.metadata&.annotations&.to_hash&.key? TIMESTAMP_ANNOTATION
         ts = k8s_service.annotations[TIMESTAMP_ANNOTATION]
-        service.last_update = Time.at(ts.to_i)
+        if ts =~ /\A\d+\z/
+          service.last_update = Time.at(ts.to_i)
+        else
+          service.last_update = Time.parse(ts)
+        end
       end
 
       @services[name] = service
@@ -115,7 +121,7 @@ module K8sInternalLb
         {
           metadata: {
             annotations: {
-              TIMESTAMP_ANNOTATION => Time.now.to_i.to_s
+              TIMESTAMP_ANNOTATION => Time.now.to_s
             }
           },
           subsets: service.to_subsets
