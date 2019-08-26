@@ -50,7 +50,7 @@ module K8sInternalLb
 
           diff = (Time.now - service.last_update)
           until_next = service.interval - diff
-          sleep_duration = until_next if until_next.positive? && until_next < sleep_duration
+          sleep_duration = until_next if until_next.positive? && until_next < @sleep_duration
 
           next unless diff >= service.interval
 
