@@ -11,8 +11,6 @@ module K8sInternalLb
       klass = Services.const_get type
       raise ArgumentError, 'Unknown service type' if klass.nil?
 
-      puts klass.inspect
-
       klass.new(**params)
     end
 
