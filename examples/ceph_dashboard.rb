@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'k8s_internal_lb'
-
 # This example will generate Kubernetes endpoints that map to the Ceph
 # Dashboard service.
 #
