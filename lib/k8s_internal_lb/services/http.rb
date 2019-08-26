@@ -6,8 +6,8 @@ require 'resolv'
 module K8sInternalLb
   module Services
     class HTTP < Service
-      attr_accessor :addresses, :timeout, :http_opts
-      attr_reader :method, :expects
+      attr_accessor :timeout, :http_opts
+      attr_reader :addresses, :method, :expects
 
       def initialize(addresses:, method: :head, expects: :success, timeout: 5, http_opts: {}, **params)
         params[:ports] ||= []
@@ -15,18 +15,13 @@ module K8sInternalLb
 
         self.method = method
         self.expects = expects
+        self.addresses = addresses
 
-        addresses = addresses.map do |addr|
-          addr = URI(addr)
-
-          addr.path = '/' if addr.path.empty?
-
-          addr
-        end
-
-        @addresses = addresses
         @timeout = timeout
         @http_opts = http_opts
+
+        @address_hash = nil
+        @port_hash = nil
       end
 
       def ports
@@ -39,7 +34,7 @@ module K8sInternalLb
         @port_hash = port_hash
 
         @http_ports ||= begin
-          http_ports = @addresses.map { |addr| Port.new port: addr.port }.uniq
+          http_ports = @addresses.map { |addr| Port.new(port: addr.port) }.uniq
         
           # Copy port names over where appropriate
           super.each do |port|
@@ -51,6 +46,18 @@ module K8sInternalLb
 
           http_ports
         end
+      end
+
+      def addresses=(addresses)
+        addresses = addresses.map do |addr|
+          addr = URI(addr)
+
+          addr.path = '/' if addr.path.empty?
+
+          addr
+        end
+
+        @addresses = addresses
       end
 
       def method=(method)

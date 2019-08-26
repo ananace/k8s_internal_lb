@@ -25,5 +25,15 @@ class ServicsHTTPTest < Test::Unit::TestCase
 
     assert_equal 5000, svc.ports.first.port
     assert_equal 'HTTP', svc.ports.first.name
+
+    svc.addresses = ['http://example.com']
+
+    assert_equal 80, svc.ports.first.port
+    assert_nil svc.ports.first.name
+
+    svc.ports = [K8sInternalLb::Port.new(port: 80, name: 'http')]
+
+    assert_equal 80, svc.ports.first.port
+    assert_equal 'http', svc.ports.first.name
   end
 end
