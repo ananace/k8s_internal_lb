@@ -10,7 +10,7 @@ parser = OptParse.new do |opts|
   opts.banner = 'Usage: k8s_internal_lb [options...]'
 
   opts.on('-c', '--config=FILE', 'Run with a specific configuration file, can be specified multiple times') do |file|
-    raise ArugmentError, 'Not a valid file' unless File.file? file
+    raise ArgumentError, 'Not a valid path' unless File.exist? file
 
     (options.config_files ||= []) << file
   end
