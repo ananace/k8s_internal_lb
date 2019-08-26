@@ -34,7 +34,7 @@ module K8sInternalLb
         
         # Copy port names over where appropriate
         super.each do |port|
-          http_port = http_ports.find { |http_port| http_port.port == port.port }
+          http_port = http_ports.find { |hp| hp.port == port.port }
           next unless http_port
 
           http_port.name = port.name
