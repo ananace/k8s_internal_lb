@@ -29,7 +29,8 @@
 #     port: 5000
 #     protocol: TCP
 #
-# At the moment, service objects have to be created beforehand.
+# At the moment, service objects have to be created beforehand, and port names
+# have to map correctly.
 #
 class CephDashboard < K8sInternalLb::Services::HTTP
   attr_reader :mgrs
