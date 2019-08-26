@@ -16,6 +16,8 @@ Run the application by specifying a configuration rb file, it can run in both on
 
     $ k8s_internal_lb
 
+Check the provided [examples](examples/) for ideas on how to configure the system.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/ananace/k8s_internal_lb
