@@ -30,17 +30,19 @@ module K8sInternalLb
       end
 
       def ports
-        http_ports = @addresses.map { |addr| Port.new port: addr.port }.uniq
+        @http_ports ||= begin
+          http_ports = @addresses.map { |addr| Port.new port: addr.port }.uniq
         
-        # Copy port names over where appropriate
-        super.each do |port|
-          http_port = http_ports.find { |hp| hp.port == port.port }
-          next unless http_port
+          # Copy port names over where appropriate
+          super.each do |port|
+            http_port = http_ports.find { |hp| hp.port == port.port }
+            next unless http_port
 
-          http_port.name = port.name
+            http_port.name = port.name
+          end
+
+          http_ports
         end
-
-        http_ports
       end
 
       def method=(method)
@@ -83,7 +85,7 @@ module K8sInternalLb
           e_addr = Address.new ip: address,
                                hostname: addr.host.split('.').first
 
-          Endpoint.new address: e_addr, port: Port.new(port: addr.port), status: available
+          Endpoint.new address: e_addr, port: ports.find { |p| p.port == addr.port }, status: available
         end
 
         true
