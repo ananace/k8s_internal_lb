@@ -31,7 +31,7 @@ parser = OptParse.new do |opts|
 end
 parser.parse!
 
-if options.config_files&.any
+if options.config_files&.any?
   options.config_files.each do |file|
     if File.directory? file
       Dir.entries(file).select { |f| f.end_with? '.rb' }.each do |f|
