@@ -1,12 +1,20 @@
 # frozen_string_literal: true
 
 require 'ipaddr'
+autoload :Resolv, 'resolv'
 
 module K8sInternalLb
   class Address
     attr_reader :hostname, :ip
 
-    def initialize(hostname: nil, ip:)
+    def initialize(hostname: nil, ip: nil, fqdn: nil)
+      raise ArgumentError, 'missing keyword: ip' if fqdn.nil? && ip.nil?
+
+      if fqdn
+        ip ||= Resolv.getaddress fqdn
+        hostname ||= fqdn.split('.').first
+      end
+
       self.hostname = hostname
       self.ip = ip
     end
