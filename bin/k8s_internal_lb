@@ -35,7 +35,7 @@ if options.config_files&.any?
   options.config_files.each do |file|
     if File.directory? file
       Dir.entries(file).select { |f| f.end_with? '.rb' }.each do |f|
-        load f
+        load File.join(file, f)
       end
     else
       load file
