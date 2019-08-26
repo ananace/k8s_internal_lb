@@ -10,7 +10,7 @@ class CephDashboard < K8sInternalLb::Services::HTTP
   def initialize(mgrs:, **params)
     super name: 'ceph-dashboard',
           ports: [Port.new(name: 'http', port: 5000, protocol: :TCP)],
-          addresses: mgrs.map { |mgr| URI("http://#{mgr}.ctrl-c.liu.se:5000/") },
+          addresses: mgrs.map { |mgr| URI("http://#{mgr}.example.com:5000/") },
           interval: 30,
           **params
 
@@ -19,5 +19,5 @@ class CephDashboard < K8sInternalLb::Services::HTTP
 end
 
 K8sInternalLb.configure! do |client|
-  client.add_service(CephDashboard.new(mgrs: ['jill-flitter', 'leroy-acevedo', 'nancy-daleske']))
+  client.add_service(CephDashboard.new(mgrs: %w[cephmgr1 cephmgr2 cephmgr3]))
 end
