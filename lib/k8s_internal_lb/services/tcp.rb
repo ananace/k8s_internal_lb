@@ -19,7 +19,7 @@ module K8sInternalLb
         raise 'No TCP ports provided' if ports.select(&:tcp?).empty?
 
         @endpoints = addresses.map do |addr|
-          ports.map do |port|
+          ports.select(&:tcp?).map do |port|
             available = \
               begin
                 Timeout.timeout(timeout) do
